@@ -13,13 +13,17 @@ library(tseries) # for ccf() function
 library(RColorBrewer)
 library(sp)
 library(maptools) 
+library(knitr)
+library(kableExtra)
 
 # read in data set
 data <- read.csv("/Users/piper/Piper Documents/R and Python/Project 1/DataRaw/MozSyntheticMalaria.csv")
 
-# create variable "malaria incidence in cases per 1,000 population in children under 5"
+# create variable "malaria incidence in cases per 1,000 in children under 5"
 data <- mutate(data,
                cptu5 = (malaria / (Population_UN*u5weight))*1000)
+
+# exclude data from 2017
 data <- data %>% 
   filter(!(Epiyear == 2017))
 
@@ -28,76 +32,48 @@ data <- data %>%
 summary(data) # no missing data
 
 # distribution of the outcome 
-hist(data$cptu5) # seems positively skewed
-hist(log(data$cptu5)) # does not make better, skewed negatively
-hist(sqrt(data$cptu5)) # seems very normally distributed
-# unsure if I want to transform outcome, since we are not modeling data
+ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='purple', aes(x=cptu5)) + 
+  labs(x='Incidence in Cases per 1000 Under 5', y='Frequency') 
+                                              # seems positively skewed
+ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='turquoise2', aes(x=log(cptu5))) + 
+  labs(x='log(Incidence in Cases per 1000 Under 5)', y='Frequency') 
+                                          # does not make better, skewed negatively
+ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='deeppink2', aes(x=sqrt(cptu5))) + 
+  labs(x=expression(sqrt('Incidence in Cases per 1000 Under 5')), y='Frequency') 
+                                                    # seems normally distributed
+# If I were to model the data, I would likely square-root transform the outcome
 
-############################## Optimal Lag Length #################################
-# ccf plots to determine optimal lead length
-ccf(data$rainTot, data$cptu5, main = "CCF Plot: Total Rainfall vs. CPT-U5") # optimal lead ~ 4
-ccf(data$tavg, data$cptu5, main = "CCF Plot: Avg Temperature vs. CPT-U5") # optimal lead ~ 15
-ccf(data$rainTot, data$cptu5, 8, main = "CCF Plot: Total Rainfall vs. CPT-U5")
-ccf(data$tavg, data$cptu5, 20, main = "CCF Plot: Avg. Temperature vs. CPT-U5")
+# smoothing splines to understand overall relationships between outcome and 
+# total rainfall and average temperature 
+g1 <- ggplot(data=data, aes(color=Region)) + 
+  geom_point(aes(x=rainTot, y=cptu5)) +
+  geom_smooth(aes(x=rainTot, y=cptu5)) +
+  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5")
+g2 <- ggplot(data=data, aes(color=Region)) +
+  geom_smooth(aes(x=rainTot, y=cptu5)) +
+  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5")
+grid.arrange(g1, g2, g3, nrow = 1)
 
-# numerical estimates of max ACF and corresponding lag/lead 
-rain.ccf <- ccf(data$rainTot, data$cptu5)
-max.acf1 <- max(rain.ccf$acf) # 0.1197 = max ACF
-rain.lag <- rain.ccf$lag[which(rain.ccf$acf > max.acf1-0.0001 & rain.ccf$acf < max.acf1+0.0001)] # -4
+g4 <- ggplot(data=data, aes(color=Region)) + 
+  geom_point(aes(x=tavg, y=cptu5)) +
+  geom_smooth(aes(x=tavg, y=cptu5)) +
+  labs(x="Average Weekly Temperature", y="Incidence in Cases per 1000 Under 5")
+g5 <- ggplot(data=data, aes(color=Region)) +
+  geom_smooth(aes(x=tavg, y=cptu5)) +
+  labs(x="Average Weekly Temperature", y="Incidence in Cases per 1000 Under 5")
+grid.arrange(g4, g5, nrow = 1) # potential quadratic/quartic relationship
 
-temp.ccf <- ccf(data$tavg, data$cptu5)
-max.acf2 <- max(temp.ccf$acf) # 0.2101 = max ACF
-temp.lag <- temp.ccf$lag[which(temp.ccf$acf > max.acf2-0.0001 & temp.ccf$acf < max.acf2+0.0001)] # -16
+# correlation plot between rainTot and tavg
+ggplot(data=data) + 
+  stat_bin2d(aes(x=tavg, y=rainTot)) +
+  labs(x="Average Weekly Temperature", y="Weekly Total Rainfall")
+                                                  # difficult plot to interpret
 
-########################## Region with highest malaria ############################
-# region with most cases/1000 under 5
-avg.cptu5.by.region <- data %>% 
-  group_by(Region) %>%
-  summarise(mean.cptu5 = mean(cptu5)) # Northern region = highest mean cptu5
+cor(data$tavg, data$rainTot) # Pearson correlation = 0.1534
+cor(data$tavg, data$rainTot, method = 'spearman') # Spearman correlation = 0.3180
+# remember: these two variables may be correlated, 
+# but not necessarily linearly correlated
 
-mal.by.region <- data %>% 
-  group_by(Region) %>%
-  summarise(mean.malaria = mean(malaria)) # Northern region = highest mean malaria cases u5
-
-# prep data for shape file
-data2 <- data
-data2$Province <- as.character(data2$Province)
-data2$Province[data2$Province %in% c("MAPUTO", "MAPUTO CIDADE")] <- "MAPUTO"
-
-# check that levels were combined correctly
-data2$Province <- as.factor(data2$Province)
-levels(data2$Province) 
-
-# rain total for each province
-rain.province <- as.data.frame(tapply(data2$rainTot, list(data2$District), mean))
-tavg.province <- as.data.frame(tapply(data2$tavg, list(data2$District), mean))
-
-all.stats <- cbind(rain.province, tavg.province)
-colnames(all.stats) <- c("avg.rainTot", "avg.tavg")
-
-# import shape file for provinces
-poly <- readShapePoly("/Users/piper/Piper Documents/R and Python/Week 5/Moz_admin2.shp")
-plot(poly)
-
-# rename rows to match shape file
-all.stats2 <- all.stats
-rownames(all.stats2) <- poly$admin_2
-
-# combine 'all.stats' data frame with the shape file
-polydata <- SpatialPolygonsDataFrame(poly, all.stats2, match.ID = F)
-
-# create color palettes for maps
-rain.pal <- brewer.pal(n = 9, name = "YlGnBu")
-tavg.pal <- brewer.pal(n = 9, name = "RdPu")
-
-#plot avg. total rainfall for each province
-spplot(polydata, c("avg.rainTot"), 
-       colorkey=list(space="right"), scales = list(draw = TRUE), 
-       main = "Average Total Weekly Rainfall (mm)", 
-       as.table = TRUE, col.regions = rain.pal, col="transparent", cuts = 8)
-
-#plot avg. tavg for each province
-spplot(polydata, c("avg.tavg"), 
-       colorkey=list(space="right"), scales = list(draw = TRUE), 
-       main = "Average Weekly Temperature Average", 
-       as.table = TRUE, col.regions = tavg.pal, col="transparent", cuts = 8)
