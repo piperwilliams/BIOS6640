@@ -1,8 +1,8 @@
 ##############################################
 ### Author: Piper Williams 
 ### BIOS 6640, Project 1
-### Purpose: Initial Data Exploration
-### Date: October 9, 2018
+### Purpose: Malaria in Mozambique
+### Date: October 20, 2018
 ##############################################
 
 # load libraries
@@ -111,5 +111,42 @@ spplot(polydata.cptu5.district2, c('cptu5.Quarter1', 'cptu5.Quarter2', 'cptu5.Qu
        as.table = TRUE, col="transparent")
 
 ######################### Malaria Incidence Over Time ############################
+data2.red <- data2 %>% 
+  select(Epiyear, Epiweek, rainTot, tavg, cptu5, Province, District, DISTCODE, Region) %>%
+  mutate(hypoth.date = as.Date(paste(Epiyear, Epiweek, "1", sep = "-"), format="%Y-%U-%u"))
 
+ts.data.region <- data2.red %>%
+  group_by(Region, hypoth.date) %>%
+  summarise(mean.cptu5 = mean(cptu5),
+            mean.rainTot = mean(rainTot),
+            mean.tavg = mean(tavg)) 
+
+ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.cptu5)) +
+  geom_line(aes(color=Region)) + 
+  labs(y="Malaria Cases per 1000 Under 5", x="Date") + 
+  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+
+# also plot rainfall and temperature
+ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.rainTot)) +
+  geom_line(aes(color=Region)) + 
+  labs(y="Average Total Weekly Rainfall (mm)", x="Date") + 
+  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+
+ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.tavg)) +
+  geom_line(aes(color=Region)) + 
+  labs(y="Average Temperature (Celcius)", x="Date") + 
+  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+
+# province plot
+ts.data.province <- data2.red %>%
+  group_by(Province, hypoth.date) %>%
+  summarise(mean.cptu5 = mean(cptu5),
+            mean.rainTot = mean(rainTot),
+            mean.tavg = mean(tavg)) 
+
+ggplot(data=ts.data.province, aes(x=hypoth.date, y=mean.cptu5)) +
+  geom_line(aes(color=Province)) + 
+  labs(y="Malaria Cases per 1000 Under 5", x="Date") + 
+  scale_color_manual(values = c("purple4", "purple1", "darkblue", "blue", "deepskyblue1", 
+                                  "cyan2", "yellow1", "orange1", "deeppink1", "deeppink4"))
 

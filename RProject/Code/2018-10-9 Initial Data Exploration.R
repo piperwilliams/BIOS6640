@@ -34,15 +34,15 @@ summary(data) # no missing data
 # distribution of the outcome 
 ggplot(data=data) +
   geom_histogram(alpha=0.6, fill='purple', aes(x=cptu5)) + 
-  labs(x='Incidence in Cases per 1000 Under 5', y='Frequency') 
+  labs(x='Malaria Cases per 1000 Under 5', y='Frequency') 
                                               # seems positively skewed
 ggplot(data=data) +
-  geom_histogram(alpha=0.6, fill='turquoise2', aes(x=log(cptu5))) + 
-  labs(x='log(Incidence in Cases per 1000 Under 5)', y='Frequency') 
+  geom_histogram(alpha=0.6, fill='cyan3', aes(x=log(cptu5))) + 
+  labs(x='log(Malaria Cases per 1000 Under 5)', y='Frequency') 
                                           # does not make better, skewed negatively
 ggplot(data=data) +
   geom_histogram(alpha=0.6, fill='deeppink2', aes(x=sqrt(cptu5))) + 
-  labs(x=expression(sqrt('Incidence in Cases per 1000 Under 5')), y='Frequency') 
+  labs(x=expression(sqrt('Malaria Cases per 1000 Under 5')), y='Frequency') 
                                                     # seems normally distributed
 # If I were to model the data, I would likely square-root transform the outcome
 
@@ -55,7 +55,7 @@ g1 <- ggplot(data=data, aes(color=Region)) +
 g2 <- ggplot(data=data, aes(color=Region)) +
   geom_smooth(aes(x=rainTot, y=cptu5)) +
   labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5")
-grid.arrange(g1, g2, g3, nrow = 1)
+grid.arrange(g1, g2, nrow = 1)
 
 g4 <- ggplot(data=data, aes(color=Region)) + 
   geom_point(aes(x=tavg, y=cptu5)) +

@@ -72,3 +72,4 @@ ggplot(data=avg.quarter.cptu5.by.province) +
   labs(y="Average Cases per 1000 Under 5", x="Annual Quarter") + 
   scale_fill_manual(values = c("purple4", "purple1", "darkblue", "blue", "deepskyblue1", 
                                "cyan2", "yellow1", "orange1", "deeppink1", "deeppink4"))
+
