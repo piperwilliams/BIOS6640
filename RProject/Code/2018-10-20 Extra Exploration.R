@@ -27,7 +27,10 @@ data <- mutate(data,
 data <- data %>% 
   filter(!(Epiyear == 2017))
 
+########################### Seasonal Boxplots #####################################
+data <- data %>%
+  mutate(Quarter = cut(Epiweek, breaks = c(0, 13, 26, 39, Inf), 
+                       labels = c("Quarter 1" , "Quarter 2", "Quarter 3", "Quarter 4")))
 
-
-
-
+ggplot(data=data) +
+  geom_boxplot(aes(x=Quarter, y=cptu5)) # not interesting

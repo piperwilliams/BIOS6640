@@ -64,7 +64,7 @@ ggplot(data=avg.quarter.cptu5.by.region) +
   geom_bar(stat='identity', aes(x=Quarter, y=mean.cptu5, fill=Region)) +
   facet_wrap( ~Region, ncol = 2) + 
   labs(y="Average Cases per 1000 Under 5", x="Annual Quarter") + 
-  scale_fill_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+  scale_fill_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 
 ggplot(data=avg.quarter.cptu5.by.province) + 
   geom_bar(stat='identity', aes(x=Quarter, y=mean.cptu5, fill=Province)) +

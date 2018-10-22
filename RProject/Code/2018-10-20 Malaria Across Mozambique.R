@@ -124,18 +124,18 @@ ts.data.region <- data2.red %>%
 ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.cptu5)) +
   geom_line(aes(color=Region)) + 
   labs(y="Malaria Cases per 1000 Under 5", x="Date") + 
-  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 
 # also plot rainfall and temperature
 ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.rainTot)) +
   geom_line(aes(color=Region)) + 
   labs(y="Average Total Weekly Rainfall (mm)", x="Date") + 
-  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 
 ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.tavg)) +
   geom_line(aes(color=Region)) + 
   labs(y="Average Temperature (Celcius)", x="Date") + 
-  scale_color_manual(values = c("purple1", "darkblue", "cyan3", "deeppink1"))
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 
 # province plot
 ts.data.province <- data2.red %>%
