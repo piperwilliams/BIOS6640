@@ -1,0 +1,442 @@
+---
+title: "BIOS 6640-R Project"
+author: "Piper Williams"
+date: "10/26/2018"
+output: pdf_document
+header-includes:
+   - \usepackage{indentfirst}
+indent: true
+fontsize: 12pt
+---
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# load libraries
+library(dplyr)
+library(tibble)
+library(ggplot2)
+library(gridExtra)
+library(tseries) # for ccf() function
+library(RColorBrewer)
+library(sp)
+library(maptools) 
+library(knitr)
+library(kableExtra)
+
+# read in data set
+data <- read.csv("/Users/piper/Piper Documents/R and Python/Project 1/DataRaw/MozSyntheticMalaria.csv")
+
+# create variable "malaria incidence in cases per 1,000 in children under 5"
+data <- mutate(data,
+               cptu5 = (malaria / (Population_UN*u5weight))*1000)
+
+# exclude data from 2017
+data <- data %>% 
+  filter(!(Epiyear == 2017))
+
+```
+
+
+###Background
+
+Malaria is a parasitic blood disease that is most commonly transmitted via the *Anopheles* mosquito species.$^1$ Other forms of malaria parasite transmission include congenital transmission and transfusion transmission.$^1$ There are four malaria parasites known to infect humans: *Plasomdium falciparum, vivax, ovale,* and *malariae*.$^1$ Symptoms associated with malaria begin to manifest anywhere from seven to thirty days after the initial exposure and include fever, headache, increased heart rate, and various gastrointestinal problems.$1$ If an infected individual is not diagnosed and treated promptly, malaria has the potential to be fatal. It should be noted that the most vulnerable population to malaria infection is children under five years of age, as this population is less likley to have acquired immunity. While the global incidence of malaria as decreased by approximately 18% from 2010 to 2016, malaria remains a major public health issue for numerous countries.$^2$     
+
+
+In the year 2016, there were approximately 216 million reported cases of malaria  and 450,000 malaria-related deaths worldwide.$^3$ In the same year, 91% of all malaria-related deaths were concentrated in the World Health Organization (WHO) African region, which includes the country of Mozambique.$^3$ In Mozambique, approximately four to six million malaria cases are reported each year. While this disease is known to be largely preventable and curable, it continues to be an epidemic in Mozambique and other countries in sub-Saharan Africa.$^4$ Allotting preventative resources to highly vunerable areas, which include insecticide-treated bednets and indoor residual spraying, educating citizens in these regions about the importance of using these resources, and malaria surveillance are each critical components of malaria prevention and possible elimination.$^5$ To ensure that malaria prevention resources are distributed and implemented effectively, the trends in malaria incidence must be better understood. 
+
+
+In this report, the spatial and temporal trends in malaria incidence in children under five and their relationship to specific climatic conditions in Mozambique, such as rainfall and temperature, were further explored. Increased rainfall and increased ambient temperatures have previously been shown to be associated with increased malaria transmission, as these climate conditions provide an optimal environment for the malaria parasite to be transmitted to the *Anopheles* mosquito and, ultimately, to humans.$^1$ Increased rainfall creates a larger number of collections of water, which serve as prime breeding sites for the mosquito species.$^1$ Increased ambient temperatures shortens the malaria parasite's growth cycle, which increases the probability of transmission from an infected mosquito mother to her offspring. In uncovering these spatio-temporal relationships and their association with climatic trends, there is an increased potential to prevent malaria transmission in Mozambique and other countries around the world. $\vspace{0.25cm}$
+
+
+###Description of Research Problem and Data
+
+
+As mentioned previously, the main aspect of this report was to uncover underlying trends in malaria incidence in Mozambique. The final data set used in subsequent visualizations consisted of weekly data for the 142 districts of Mozambique from 2010 to 2016. Data was collected for the first 9 weeks of 2017. Due to the lack of data for this year, I chose to exclude 2017 data in this report. Variables measured included weekly total rainfall (mm), average rainfall (mm), average temperature (Celcius), relative humidity (%), saturation vapor pressure deficit (mmHg), surface barometric pressure (hPa), total district population, proportion of total population under five years of age, number of malaria cases under five reported, etc. The outcome-of-interest was cases per 1000 in children under five. A proportion of cases was used as the outcome rather than simply the number of malaria cases in children under five to control against the fact that certain districts have higher total populations than others (thus, more malaria cases simply due to higher population in that district). 
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
+g1 <- ggplot(data=data, aes(color=Region)) +
+  geom_point(aes(x=rainTot, y=cptu5)) +
+  geom_smooth(aes(x=rainTot, y=cptu5)) +
+  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5") +
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+g2 <- ggplot(data=data, aes(color=Region)) +
+  geom_smooth(aes(x=rainTot, y=cptu5)) +
+  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5") +
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+grid.arrange(g1, g2, nrow = 1)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
+g3 <- ggplot(data=data, aes(color=Region)) +
+  geom_point(aes(x=tavg, y=cptu5)) +
+  geom_smooth(aes(x=tavg, y=cptu5)) +
+  labs(x="Average Weekly Temperature", y="Incidence in Cases per 1000 Under 5") +
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+g4 <- ggplot(data=data, aes(color=Region)) +
+  geom_smooth(aes(x=tavg, y=cptu5)) +
+  labs(x="Average Weekly Temperature", y="Incidence in Cases per 1000 Under 5")+
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+grid.arrange(g3, g4, nrow = 1)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
+# ccf plots to determine optimal lead length
+par(mfrow = c(1,2))
+rain.ccf <- ccf(data$rainTot, data$cptu5, main = "CCF Plot: Rainfall") # optimal lead ~ 4
+temp.ccf <- ccf(data$tavg, data$cptu5, main = "CCF Plot: Temperature") # optimal lead ~ 15
+
+# numerical estimates of max ACF and corresponding lag/lead
+max.acf1 <- max(rain.ccf$acf) # 0.1197 = max ACF
+rain.lag <- rain.ccf$lag[which(rain.ccf$acf > max.acf1-0.0001 & rain.ccf$acf < max.acf1+0.0001)] # -4
+
+max.acf2 <- max(temp.ccf$acf) # 0.2101 = max ACF
+temp.lag <- temp.ccf$lag[which(temp.ccf$acf > max.acf2-0.0001 & temp.ccf$acf < max.acf2+0.0001)] # -16
+ # I realize that one limitation of this method is the default
+ # utilizes Pearson correlation
+
+
+# create a table summarizing these results
+rain.ccf.results <- c(rain.lag, round(max.acf1, 4))
+temp.ccf.results <- c(temp.lag, round(max.acf2, 4))
+labels <- c('Weekly Total Rainfall', 'Average Weekly Temperature')
+ccf.results <- rbind(rain.ccf.results, temp.ccf.results)
+ccf.results <- as.data.frame(cbind(labels, ccf.results))
+rownames(ccf.results) <- NULL
+colnames(ccf.results) <- c("", "Lag", "Max. ACF")
+
+knitr::kable(ccf.results, format = "latex", booktabs = TRUE,
+              align=rep('c')) %>%
+   kable_styling(position = "center") %>%
+   column_spec(1, width = "14em") %>%
+   column_spec(2, width = "5em") %>%
+   column_spec(3, width = "6em")
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width=8, dpi=125}
+# make Maputo one province
+data$Province <- as.character(data$Province)
+data$Province[data$Province %in% c("MAPUTO", "MAPUTO CIDADE")] <- "MAPUTO"
+
+# check that levels were combined correctly
+data$Province <- as.factor(data$Province)
+# levels(data$Province)
+
+# region with most cases/1000 under 5 (aggregated over all time)
+avg.cptu5.by.region <- data %>%
+  group_by(Region) %>%
+  summarise(mean.cptu5 = mean(cptu5)) # Northern region = highest mean cptu5
+
+mal.by.region <- data %>%
+  group_by(Region) %>%
+  summarise(mean.malaria = mean(malaria)) # Northern region = highest mean malaria cases u5
+
+# see if certain parts of year have higher incidence compared to others
+data <- data %>%
+  mutate(Quarter = cut(Epiweek, breaks = c(0, 13, 26, 39, Inf),
+         labels = c("Quarter 1" , "Quarter 2", "Quarter 3", "Quarter 4")))
+
+avg.quarter.cptu5.by.region <- data %>%
+  group_by(Region, Quarter) %>%
+  summarise(mean.cptu5 = mean(cptu5)) # q1 and q2 seem to have higher incidence
+
+avg.quarter.cptu5.by.province <- data %>%
+  group_by(Province, Quarter) %>%
+  summarise(mean.cptu5 = mean(cptu5))
+
+# plot this data
+ggplot(data=avg.quarter.cptu5.by.region) +
+  geom_bar(stat='identity', aes(x=Quarter, y=mean.cptu5, fill=Region)) +
+  facet_wrap( ~Region, ncol = 2) +
+  labs(y="Cases per 1000 Under 5", x="Annual Quarter",
+       title = "Malaria Incidence by Quarter Across Regions") +
+  scale_fill_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=6, fig.width=8, dpi=125}
+ggplot(data=avg.quarter.cptu5.by.province) +
+  geom_bar(stat='identity', aes(x=Quarter, y=mean.cptu5, fill=Province)) +
+  facet_wrap( ~Province, ncol = 2) +
+  labs(y="Cases per 1000 Under 5", x="Annual Quarter",
+       title = "Malaria Incidence by Quarter Across Provinces") +
+  scale_fill_manual(values = c("purple4", "purple1", "darkblue",
+                               "blue", "deepskyblue3", "cyan2", "yellow1",
+                               "orange1", "deeppink1", "deeppink4"))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# average rain total and tavg for each province
+rain.province <- as.data.frame(tapply(data$rainTot, list(data$Province), mean))
+colnames(rain.province) <- c("avg.rainTot")
+tavg.province <- as.data.frame(tapply(data$tavg, list(data$Province), mean))
+colnames(tavg.province) <- c("avg.tavg")
+all.stats.province <- cbind(rain.province, tavg.province)
+
+# average rain total and tavg for each district
+rain.district <- as.data.frame(tapply(data$rainTot, list(data$District), mean))
+colnames(rain.district) <- c("avg.rainTot")
+tavg.district <- as.data.frame(tapply(data$tavg, list(data$District), mean))
+colnames(tavg.district) <- c("avg.tavg")
+all.stats.district <- cbind(rain.district, tavg.district)
+
+# import shape file for provinces
+poly.province <- readShapePoly("/Users/piper/Piper Documents/R and Python/Project 1/DataRaw/mozambique_admin1.shp")
+# plot(poly.province)
+
+# import shape file for districts
+poly.district <- readShapePoly("/Users/piper/Piper Documents/R and Python/Project 1/DataRaw/Moz_admin2.shp")
+# plot(poly.district)
+
+# rename rows to match shape files
+rownames(all.stats.province) <- poly.province$admin_1
+rownames(all.stats.district) <- poly.district$DISTCODE
+
+# combine 'all.stats' data frame with the shape file
+polydata.province <- SpatialPolygonsDataFrame(poly.province, all.stats.province, match.ID = F)
+polydata.district <- SpatialPolygonsDataFrame(poly.district, all.stats.district, match.ID = F)
+
+########################### ANNUAL QUARTER PLOTS #################################
+data <- data %>%
+  mutate(Quarter = cut(Epiweek, breaks = c(0, 13, 26, 39, Inf),
+                       labels = c("Quarter 1" , "Quarter 2",
+                                  "Quarter 3", "Quarter 4")))
+
+# average rain total and tavg for each province per quarter
+rain.province2 <- as.data.frame(tapply(data$rainTot,
+                                       list(data$Province, data$Quarter), mean))
+tavg.province2 <- as.data.frame(tapply(data$tavg,
+                                       list(data$Province, data$Quarter), mean))
+all.stats.province2 <- cbind(rain.province2, tavg.province2)
+colnames(all.stats.province2) <- c('rain.Quarter1', 'rain.Quarter2',
+                                   'rain.Quarter3','rain.Quarter4',
+                                   'tavg.Quarter1', 'tavg.Quarter2',
+                                   'tavg.Quarter3', 'tavg.Quarter4')
+
+# average rain total and tavg for each district per quarter
+rain.district2 <- as.data.frame(tapply(data$rainTot,
+                                       list(data$District, data$Quarter), mean))
+tavg.district2 <- as.data.frame(tapply(data$tavg,
+                                       list(data$District, data$Quarter), mean))
+all.stats.district2 <- cbind(rain.district2, tavg.district2)
+colnames(all.stats.district2) <- c('rain.Quarter1', 'rain.Quarter2',
+                                   'rain.Quarter3', 'rain.Quarter4',
+                                   'tavg.Quarter1', 'tavg.Quarter2',
+                                   'tavg.Quarter3', 'tavg.Quarter4')
+
+# rename rows to match shape files
+rownames(all.stats.province2) <- poly.province$admin_1
+rownames(all.stats.district2) <- poly.district$DISTCODE
+
+# combine 'all.stats' data frame with the shape file
+polydata.province2 <- SpatialPolygonsDataFrame(poly.province, all.stats.province2, match.ID = F)
+polydata.district2 <- SpatialPolygonsDataFrame(poly.district, all.stats.district2, match.ID = F)
+
+#plot avg. total rainfall for each province aggregated over annual quarters
+spplot(polydata.province2, c('rain.Quarter1', 'rain.Quarter2',
+                             'rain.Quarter3','rain.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Average Total Weekly Rainfall (mm)",
+       as.table = TRUE, col="transparent")
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# plot avg. temperature for each province aggregated over annual quarters
+spplot(polydata.province2, c('tavg.Quarter1', 'tavg.Quarter2',
+                             'tavg.Quarter3','tavg.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Average Temperature (Celcius)",
+       as.table = TRUE, col="transparent")
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# avg. cptu5 for each province
+cptu5.province <- as.data.frame(tapply(data$cptu5, list(data$Province), mean))
+colnames(cptu5.province) <- c("avg.cptu5")
+
+# avg. cptu5 for each district
+cptu5.district <- as.data.frame(tapply(data$cptu5, list(data$District), mean))
+colnames(cptu5.district) <- c("avg.cptu5")
+
+# rename rows to match shape files
+rownames(cptu5.province) <- poly.province$admin_1
+rownames(cptu5.district) <- poly.district$DISTCODE
+
+# combine data frame with the shape file
+polydata.cptu5.province <- SpatialPolygonsDataFrame(poly.province, cptu5.province, match.ID = F)
+polydata.cptu5.district <- SpatialPolygonsDataFrame(poly.district, cptu5.district, match.ID = F)
+
+######################### ANNUAL QUARTER PLOTS ################################
+# average cptu5 for each province per quarter
+cptu5.province2 <- as.data.frame(tapply(data$cptu5,
+                                        list(data$Province, data$Quarter), mean))
+colnames(cptu5.province2) <- c('cptu5.Quarter1', 'cptu5.Quarter2',
+                                   'cptu5.Quarter3', 'cptu5.Quarter4')
+
+# average cptu5 for each district per quarter
+cptu5.district2 <- as.data.frame(tapply(data$cptu5,
+                                        list(data$District, data$Quarter), mean))
+colnames(cptu5.district2) <- c('cptu5.Quarter1', 'cptu5.Quarter2',
+                               'cptu5.Quarter3', 'cptu5.Quarter4')
+
+# rename rows to match shape files
+rownames(cptu5.province2) <- poly.province$admin_1
+rownames(cptu5.district2) <- poly.district$DISTCODE
+
+# combine data frame with the shape file
+polydata.cptu5.province2 <- SpatialPolygonsDataFrame(poly.province, cptu5.province2, match.ID = F)
+polydata.cptu5.district2 <- SpatialPolygonsDataFrame(poly.district, cptu5.district2, match.ID = F)
+
+# plot avg. cptu5 for each province aggregated over annual quarters
+spplot(polydata.cptu5.province2, c('cptu5.Quarter1', 'cptu5.Quarter2',
+                                   'cptu5.Quarter3','cptu5.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Malaria Cases per 1000 Under 5",
+       as.table = TRUE, col="transparent")
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8, dpi=125}
+data.red <- data %>%
+  select(Epiyear, Epiweek, rainTot, tavg, cptu5,
+         Province, District, DISTCODE, Region) %>%
+  mutate(hypoth.date = as.Date(paste(Epiyear, Epiweek, "1",
+                                     sep = "-"), format="%Y-%U-%u")) %>%
+  mutate(mean.cptu5 = mean(cptu5)) %>%
+  mutate(factor.Epiyear = as.factor(Epiyear))
+
+ts.data.region <- data.red %>%
+  group_by(Region, hypoth.date) %>%
+  summarise(mean.cptu5 = mean(cptu5),
+            mean.rainTot = mean(rainTot),
+            mean.tavg = mean(tavg))
+
+ggplot(data=ts.data.region, aes(x=hypoth.date, y=mean.cptu5)) +
+  geom_line(aes(color=Region)) +
+  labs(y="Cases per 1000 Under 5", x="Date",
+       title="Regional Malaria Incidence Over Time") +
+  scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8, dpi=125}
+# province plot
+ts.data.province <- data.red %>%
+  group_by(Province, hypoth.date) %>%
+  summarise(mean.cptu5 = mean(cptu5),
+            mean.rainTot = mean(rainTot),
+            mean.tavg = mean(tavg))
+
+ggplot(data=ts.data.province, aes(x=hypoth.date, y=mean.cptu5)) +
+  geom_line(aes(color=Province)) +
+  labs(y="Cases per 1000 Under 5", x="Date",
+       title="Provencial Malaria Incidence Over Time") +
+  scale_color_manual(values = c("purple4", "purple1", "darkblue", "blue",
+                                "deepskyblue3", "cyan2", "yellow1",
+                                "orange1", "deeppink1", "deeppink4"))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
+g5 <- ggplot(data=data.red, aes(x=Epiweek, y=cptu5, group=factor.Epiyear)) +
+  geom_smooth(aes(color=factor.Epiyear), se=FALSE) +
+  labs(y="Cases per 1000 Under 5",
+       title="Seasonal Plot: Malaria Cases per 1000 Under 5") +
+  scale_color_discrete(name = "Epiyear") +
+  scale_color_manual(values = c("purple4", "purple1", "darkblue",
+                               "deepskyblue3", "yellow1", "orange1",
+                               "deeppink1"), name="Epiyear")
+
+g6 <- ggplot(data=data.red, aes(x=Epiweek, y=rainTot, group=factor.Epiyear)) +
+  geom_smooth(aes(color=factor.Epiyear), se=FALSE) +
+  labs(y="Weekly Total Rainfall",
+       title="Rainfall") +
+  scale_color_discrete(name = "Epiyear") +
+  scale_color_manual(values = c("purple4", "purple1", "darkblue",
+                               "deepskyblue3", "yellow1", "orange1",
+                               "deeppink1")) +
+  theme(legend.position="none")
+
+g7 <- ggplot(data=data.red, aes(x=Epiweek, y=tavg, group=factor.Epiyear)) +
+  geom_smooth(aes(color=factor.Epiyear), se=FALSE) +
+  labs(y="Average Temperature",
+       title="Temperature") +
+  scale_color_discrete(name = "Epiyear") +
+  scale_color_manual(values = c("purple4", "purple1", "darkblue",
+                               "deepskyblue3", "yellow1", "orange1",
+                               "deeppink1")) +
+  theme(legend.position="none")
+
+grid.arrange(g5, g6, g7, nrow=1)
+
+```
+
+
+###Appendix
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
+# distribution of the outcome
+ag1 <- ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='purple', aes(x=cptu5)) +
+  labs(x='CPT-U5', y='Frequency')
+                                              # seems positively skewed
+ag2 <- ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='darkblue', aes(x=log(cptu5))) +
+  labs(x='log(CPT-U5)', y='Frequency')
+                                          # skewed negatively
+ag3 <- ggplot(data=data) +
+  geom_histogram(alpha=0.6, fill='deeppink2', aes(x=sqrt(cptu5))) +
+  labs(x=expression(sqrt('CPT-U5')), y='Frequency')
+                                                    # seems normally distributed
+grid.arrange(ag1, ag2, ag3, nrow=1)
+
+# If I were to model the data, I would likely square-root transform the outcome
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#plot avg. total rainfall for each district aggregated over annual quarters
+spplot(polydata.district2, c('rain.Quarter1', 'rain.Quarter2',
+                             'rain.Quarter3','rain.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Average Total Weekly Rainfall (mm)",
+       as.table = TRUE,  col="transparent")
+
+#plot avg. total rainfall for each district aggregated over annual quarters
+spplot(polydata.district2, c('tavg.Quarter1', 'tavg.Quarter2',
+                             'tavg.Quarter3','tavg.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Average Temperature (Celcius)",
+       as.table = TRUE,  col="transparent")
+
+#plot avg. cptu5 for each district aggregated over annual quarters
+spplot(polydata.cptu5.district2, c('cptu5.Quarter1', 'cptu5.Quarter2',
+                                   'cptu5.Quarter3','cptu5.Quarter4'),
+       names.attr = c('Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'),
+       colorkey=list(space="right"), scales = list(draw = TRUE),
+       main = "Malaria Cases per 1000 Under 5",
+       as.table = TRUE, col="transparent")
+
+```
+
+
+
