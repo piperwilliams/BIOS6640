@@ -38,41 +38,65 @@ data <- data %>%
 
 ###Background
 
-Malaria is a parasitic blood disease that is most commonly transmitted via the *Anopheles* mosquito species.$^1$ Other forms of malaria parasite transmission include congenital transmission and transfusion transmission.$^1$ There are four malaria parasites known to infect humans: *Plasomdium falciparum, vivax, ovale,* and *malariae*.$^1$ Symptoms associated with malaria begin to manifest anywhere from seven to thirty days after the initial exposure and include fever, headache, increased heart rate, and various gastrointestinal problems.$1$ If an infected individual is not diagnosed and treated promptly, malaria has the potential to be fatal. It should be noted that the most vulnerable population to malaria infection is children under five years of age, as this population is less likley to have acquired immunity. While the global incidence of malaria as decreased by approximately 18% from 2010 to 2016, malaria remains a major public health issue for numerous countries.$^2$     
+Malaria is a parasitic blood disease that is most commonly transmitted via the *Anopheles* mosquito species.$^1$ Other forms of malaria parasite transmission include congenital transmission and transfusion transmission.$^1$ There are four malaria parasites known to infect humans: *Plasomdium falciparum, vivax, ovale,* and *malariae*.$^1$ Symptoms associated with malaria begin to manifest anywhere from seven to thirty days after the initial exposure and include fever, headache, increased heart rate, and various gastrointestinal problems.$1$ If an infected individual is not diagnosed and treated promptly, malaria has the potential to be fatal. It should be noted that the most vulnerable population to malaria infection is children under five years of age, as this population is less likley to have acquired immunity. While the global incidence of malaria has decreased by approximately 18% from 2010 to 2016, malaria remains a major public health issue for numerous countries.$^2$     
 
 
 In the year 2016, there were approximately 216 million reported cases of malaria  and 450,000 malaria-related deaths worldwide.$^3$ In the same year, 91% of all malaria-related deaths were concentrated in the World Health Organization (WHO) African region, which includes the country of Mozambique.$^3$ In Mozambique, approximately four to six million malaria cases are reported each year. While this disease is known to be largely preventable and curable, it continues to be an epidemic in Mozambique and other countries in sub-Saharan Africa.$^4$ Allotting preventative resources to highly vunerable areas, which include insecticide-treated bednets and indoor residual spraying, educating citizens in these regions about the importance of using these resources, and malaria surveillance are each critical components of malaria prevention and possible elimination.$^5$ To ensure that malaria prevention resources are distributed and implemented effectively, the trends in malaria incidence must be better understood. 
 
 
-In this report, the spatial and temporal trends in malaria incidence in children under five and their relationship to specific climatic conditions in Mozambique, such as rainfall and temperature, were further explored. Increased rainfall and increased ambient temperatures have previously been shown to be associated with increased malaria transmission, as these climate conditions provide an optimal environment for the malaria parasite to be transmitted to the *Anopheles* mosquito and, ultimately, to humans.$^1$ Increased rainfall creates a larger number of collections of water, which serve as prime breeding sites for the mosquito species.$^1$ Increased ambient temperatures shortens the malaria parasite's growth cycle, which increases the probability of transmission from an infected mosquito mother to her offspring. In uncovering these spatio-temporal relationships and their association with climatic trends, there is an increased potential to prevent malaria transmission in Mozambique and other countries around the world. $\vspace{0.25cm}$
+In this report, the spatial and temporal trends in malaria incidence in children under five and their relationship to specific climatic conditions in Mozambique were further explored. Increased rainfall and increased ambient temperatures have previously been shown to be associated with increased malaria transmission, as these climate conditions provide an optimal environment for the malaria parasite to be transmitted to the *Anopheles* mosquito and, ultimately, to humans.$^1$ However, the time at which these climatic conditions are associated with malaria exposure remains unknown. Increased rainfall creates a larger number of collections of water, which serve as prime breeding sites for the mosquito species.$^1$ Increased ambient temperatures shortens the malaria parasite's growth cycle, which increases the probability of transmission from an infected mosquito mother to her offspring. In uncovering these spatio-temporal relationships and their association with climatic trends, there is an increased potential to prevent malaria transmission in Mozambique and other countries around the world. $\vspace{0.25cm}$
 
 
 ###Description of Research Problem and Data
 
 
-As mentioned previously, the main aspect of this report was to uncover underlying trends in malaria incidence in Mozambique. The final data set used in subsequent visualizations consisted of weekly data for the 142 districts of Mozambique from 2010 to 2016. Data was collected for the first 9 weeks of 2017. Due to the lack of data for this year, I chose to exclude 2017 data in this report. Variables measured included weekly total rainfall (mm), average rainfall (mm), average temperature (Celcius), relative humidity (%), saturation vapor pressure deficit (mmHg), surface barometric pressure (hPa), total district population, proportion of total population under five years of age, number of malaria cases under five reported, etc. The outcome-of-interest was cases per 1000 in children under five. A proportion of cases was used as the outcome rather than simply the number of malaria cases in children under five to control against the fact that certain districts have higher total populations than others (thus, more malaria cases simply due to higher population in that district). 
+The ultiamte goal of this report was to uncover underlying trends in malaria incidence in Mozambique. In particular, the visuals presented aimed to shed light on geographic and seasonal trends in malaria incidence over time and their association with trends in certain climatic conditions as well. As discussed previously, increased rainfall and temperature are strongly associated with increased malaria transmission. However, the lag times of rainfall and temperature that are most associated with malaria incidence are not currently known. The relationships between these two climatic conditions and malaria incidence were extensively explored here. In better understanding these trends and their associations with one another, preventative resources could be allocated more effectively to vulnerable areas in Mozambique and potentially decrease malaria transmission.
+
+
+The final data set used in subsequent visualizations consisted of weekly data for the 142 districts of Mozambique from 2010 to 2017. Data was collected for the first 9 weeks of 2017. Due to the lack of data for this year, I chose to exclude 2017 data in this report. Variables measured included weekly total rainfall (mm), average rainfall (mm), average temperature (Celcius), relative humidity (%), saturation vapor pressure deficit (mmHg), surface barometric pressure (hPa), total district population, proportion of total population under five years of age, number of malaria cases under five reported, etc. The outcome-of-interest was cases per 1000 in children under five, which was calculated as follows:
+
+
+$$
+CPTU5 = [\frac{CU5}{(Population_{total}*U5_{weight})}]*1000
+$$
+
+
+$CPTU5$ is cases per 1000 under 5, $CU5$ is total number of cases under 5, $Population_{total}$ is the total population of the district, and $U5_{weight}$ is the proportion of the total population under five years of age. A proportion of cases was used as the outcome rather than simply the number of malaria cases in children under five to control against the fact that certain districts have a larger total population than others (thus, more malaria cases simply due to a larger population in that district).  
+
+
+###Results
+####*Initially-Observed Data Trends*
+
+
+While there was no formal statistical modeling conducted in this report, exploratory data analyses were carried out to better visualize the outcome-of-interest (cases per 1000 under 5, CPT-U5) and its relationship with other variables-of-interest. First, it was discovered that CPT-U5 was postively skewed (see Appendix). A log-transformation as well as square-root transformation of the outcome were implemented to see if this would change the overall distribution of the outcome. A square-root transformed outcome seemed to follow a relatively normal distribution (see Appendix).
+
+
+The relationships between CPT-U5 and weekly total rainfall (mm) as well as average temperature (Celcius) are visualized below. These trends were also evaluated separately for each of the four regions in Mozambique.$\vspace{0.5mm}$ 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
 g1 <- ggplot(data=data, aes(color=Region)) +
   geom_point(aes(x=rainTot, y=cptu5)) +
   geom_smooth(aes(x=rainTot, y=cptu5)) +
-  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5") +
+  labs(x="Weekly Total Rainfall", y="Cases per 1000 Under 5") +
   scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 g2 <- ggplot(data=data, aes(color=Region)) +
   geom_smooth(aes(x=rainTot, y=cptu5)) +
-  labs(x="Weekly Total Rainfall", y="Incidence in Cases per 1000 Under 5") +
+  labs(x="Weekly Total Rainfall", y="Cases per 1000 Under 5") +
   scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 grid.arrange(g1, g2, nrow = 1)
 
 ```
 
 
+From a first glance, the smoothing splines above show that there is a non-linear relationship between rainfall and CPT-U5. The graphs also indicate that, overall, the northern region of Mozambique tends to have higher proportion of CPT-U5, while the southern region tends to have a lower porportion of CPT-U5. While there appears to be a somewhat quadratic trend between CPT-U5 and rainfall, it is important to note that this could be due to the fact that the right tails of the smooth splines are heavily influenced by the small number of extremely large rainfall data points. It is well-known that cubic smoothing spline patterns can be heavily influenced by "outliers" in the data, and one should be cautious when interpretting smoothing spline patterns if extreme data values are present.$\vspace{0.5mm}$ 
+
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
 g3 <- ggplot(data=data, aes(color=Region)) +
   geom_point(aes(x=tavg, y=cptu5)) +
   geom_smooth(aes(x=tavg, y=cptu5)) +
-  labs(x="Average Weekly Temperature", y="Incidence in Cases per 1000 Under 5") +
+  labs(x="Average Weekly Temperature", y="Cases per 1000 Under 5") +
   scale_color_manual(values = c("purple1", "darkblue", "orange1", "deeppink1"))
 g4 <- ggplot(data=data, aes(color=Region)) +
   geom_smooth(aes(x=tavg, y=cptu5)) +
@@ -82,6 +106,11 @@ grid.arrange(g3, g4, nrow = 1)
 
 ```
 
+
+The plots above indicate a potential quadratic, maybe even quartic relationship between average temperature and CPT-U5. Similarly to the previous graphs, this indicates that, overall, the nothern region tends to have a higher proportion of CPT-U5, while the southern region tends to have a lower proportion of CPT-U5.   
+
+
+####*Optimal Lag of Total Rainfall and Average Temperature*
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
 # ccf plots to determine optimal lead length
