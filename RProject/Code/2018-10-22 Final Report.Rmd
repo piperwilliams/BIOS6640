@@ -89,7 +89,7 @@ grid.arrange(g1, g2, nrow = 1)
 ```
 
 
-From a first glance, the smoothing splines above show that there is a non-linear relationship between rainfall and CPT-U5. The graphs also indicate that, overall, the northern region of Mozambique tends to have a higher proportion of CPT-U5, while the southern region tends to have a lower porportion of CPT-U5. While there appears to be a somewhat quadratic trend between CPT-U5 and rainfall, it is important to note that this could be due to the fact that the right tails of the smooth splines are heavily influenced by the small number of extremely large rainfall data points. It is well-known that cubic smoothing splines can be heavily influenced by "outliers" in the data, and one should be cautious when interpretting smoothing splines if extreme data values are present.$\vspace{0.5cm}$ 
+From a first glance, the smoothing splines above show that there is a non-linear relationship between rainfall and CPT-U5. The graphs also indicate that, overall, the northern region of Mozambique tended to have a higher proportion of CPT-U5, while the southern region tended to have a lower porportion of CPT-U5. While there appears to be a somewhat quadratic trend between CPT-U5 and rainfall, it is important to note that this could be due to the fact that the right tails of the smoothing splines are heavily influenced by the small number of extremely large rainfall data points. It is well known that cubic smoothing splines can be heavily influenced by "outliers"/extreme observations in the data, and one should be cautious when interpretting smoothing splines if extreme data values are present.$\vspace{0.5cm}$ 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
@@ -113,7 +113,7 @@ The plots above indicate a potential quadratic, maybe even quartic relationship 
 ####*Optimal Lag of Total Rainfall and Average Temperature*
 
 
-It is known that there is a strong association between malaria incidence and climatic conditions, such as rainfall and temperature. However, the optimal lag time between these climatic conditions and malaria incidence is not currently well known. The cross-correlation function is helpful in determining which lags of the climatic conditions that may be useful predictors of CPT-U5. It is important to note that a negative lag indicates that there is a correlation between the climatic condition at a time prior to *t* and malaria incidence at time *t*. A positive lag indicates that there is a correlation between the climatic condition at a time after *t* and malaria incidence at time *t*. Below are the cross-correlation function plots for weekly total rainfall and weekly average temperature. Also included below is a table that summizes the lag assocated with the largest $|ACF|$ value. $\vspace{0.5cm}$ 
+It is known that there is a strong association between malaria incidence and climatic conditions, such as rainfall and temperature. However, the optimal lag time between these climatic conditions and malaria incidence is not currently well known. The cross-correlation function is helpful in determining which lags of the climatic conditions may be useful predictors of CPT-U5. It is important to note that a negative lag indicates that there is a correlation between the climatic condition at a time prior to *t* and malaria incidence at time *t*. A positive lag indicates that there is a correlation between the climatic condition at a time after *t* and malaria incidence at time *t*. Below are the cross-correlation function plots for weekly total rainfall and weekly average temperature. Also included below is a table that summizes the lag assocated with the largest auto-correlation function ($|ACF|$) value. $\vspace{0.5cm}$ 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
@@ -150,7 +150,7 @@ knitr::kable(ccf.results, format = "latex", booktabs = TRUE,
 ```
 
 
-Here, we can see that the optimal lags for total rainfall and temperature are -4 and -16, respectively. This means that rainfall 4 weeks prior to *t* is most strongly correlated with CPT-U5 at *t* and average temperature 16 weeks prior to *t* is most strongly correlated with CPT-U5 at *t*. It was originally thought that rainfall and temperature lag times typically ranged from 2 to 8 weeks. While the results from the CCF Rainfall plot are consistent with this range of expected lag times, the CCF Temperature plot indicates that the lag time for temperature is much greater than originally anticipated. One key point that should be made is that the ACF values for lags proximal to the -16 lag seems to be extremely close in value to the ACF at lag -16. So while the -16 lag had the highest $|ACF|$, this was only marginally so. Another key point that should be made is that the cross-correlation function uses the Pearson correlation method in its calculation of the ACF. It is possible that the correlation between the climatic condition variables and the outcome-of-interest are not linearly correlated. This may be why we see a difference in the actual optimal lag time for temperature here versus the anticipated lag time.    
+Here, we can see that the optimal lags for total rainfall and temperature were -4 and -16, respectively. This means that rainfall 4 weeks prior to *t* is most strongly correlated with CPT-U5 at *t* and average temperature 16 weeks prior to *t* is most strongly correlated with CPT-U5 at *t*. It was originally thought that rainfall and temperature lag times typically ranged from 2 to 8 weeks. While the results from the CCF Rainfall plot are consistent with this range of expected lag times, the CCF Temperature plot indicates that the lag time for temperature was much longer than originally anticipated. One key point that should be made is that the ACF values for lags proximal to the -16 lag seemed to be extremely close in value to the ACF at lag -16. So while the -16 lag had the highest $|ACF|$, this was only marginally so. Another key point that should be made is that the cross-correlation function uses the Pearson correlation method in its calculation of the ACF. It is possible that the correlation between the climatic condition variables and the outcome-of-interest are not linearly correlated. This may be why we see a difference in the actual optimal lag time for temperature here versus the anticipated lag time.    
 
 
 ####*Quarterly Malaria Incidence Across Mozambique Regions and Provinces*
@@ -201,7 +201,8 @@ ggplot(data=avg.quarter.cptu5.by.region) +
 ```
 
 
-The graphs show that, on average, the northern region had the highest average CPT-U5 (average CPT-U5: 15.57) while the southern region had the lowest average CPT-U5 (average CPT-U5: 5.87). Across all four regions, annual quarters 1 and 2 seemed to have a higher averagen CPT-U5 in comparison to quarters 3 and 4. 
+The graphs show that, on average, the northern region had the highest average CPT-U5 (average CPT-U5: 15.57) while the southern region had the lowest average CPT-U5 (average CPT-U5: 5.87). Across all four regions, annual quarters 1 and 2 seemed to have a higher average CPT-U5 in comparison to quarters 3 and 4. $\vspace{0.5cm}$ 
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=6, fig.width=8, dpi=125}
 ggplot(data=avg.quarter.cptu5.by.province) +
@@ -216,7 +217,7 @@ ggplot(data=avg.quarter.cptu5.by.province) +
 ```
 
 
-Bar graph 2 is stratified by provinces in Mozambique rather than regions to get a better sense of which provinces are contributing more to the regional patterns observed in the previous graph. Here, we can see that the Niassa province had the highest recorded average CPT-U5 and the Maputo province the lowest recorded average CPT-U5. The Niassa province is located in the northern region of Mozambique, while the Maputo province is located in the southern region of Mozambique. Again, annual quarters 1 and 2 seems to have a higher average CPT-U5 in comparison to quarters 3 and 4 at the provencial level, similarly to what was observed at the regional level. 
+Bar graph 2 was stratified by provinces in Mozambique rather than regions to get a better sense of which provinces are contributing more to the regional patterns observed in the previous graph. Here, we can see that the Niassa province had the highest recorded average CPT-U5 and the Maputo province the lowest recorded average CPT-U5. The Niassa province is located in the northern region of Mozambique, while the Maputo province is located in the southern region of Mozambique. Again, annual quarters 1 and 2 seemed to have a higher average CPT-U5 in comparison to quarters 3 and 4 at the provincial level, similarly to what was observed at the regional level. 
 
 
 Two observations become exceedingly obvious just from the bar graphs alone. First, malaria incidence is geogrpahically dynamic. Second, malaria incidence is temporally dynamic. 
@@ -225,7 +226,7 @@ Two observations become exceedingly obvious just from the bar graphs alone. Firs
 ####*Quarterly Total Rainfall and Temperature Across Mozambique Provinces*
 
 
-Now that the optimal lag times for total rainfall and temperature have been determined, it would be beneficial to understand the regional and temporal differences in total rainfall and temperature across Mozambique.    
+Now that the optimal lag times for total rainfall and temperature have been determined, it would be beneficial to understand the regional and temporal differences in total rainfall and temperature across Mozambique. Below are provincial maps of Mozambique that show average total rainfall and average temperature by annual quarters.$\vspace{0.5cm}$   
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -237,9 +238,9 @@ colnames(tavg.province) <- c("avg.tavg")
 all.stats.province <- cbind(rain.province, tavg.province)
 
 # average rain total and tavg for each district
-rain.district <- as.data.frame(tapply(data$rainTot, list(data$District), mean))
+rain.district <- as.data.frame(tapply(data$rainTot, list(data$DISTCODE), mean))
 colnames(rain.district) <- c("avg.rainTot")
-tavg.district <- as.data.frame(tapply(data$tavg, list(data$District), mean))
+tavg.district <- as.data.frame(tapply(data$tavg, list(data$DISTCODE), mean))
 colnames(tavg.district) <- c("avg.tavg")
 all.stats.district <- cbind(rain.district, tavg.district)
 
@@ -256,8 +257,8 @@ rownames(all.stats.province) <- poly.province$admin_1
 rownames(all.stats.district) <- poly.district$DISTCODE
 
 # combine 'all.stats' data frame with the shape file
-polydata.province <- SpatialPolygonsDataFrame(poly.province, all.stats.province, match.ID = F)
-polydata.district <- SpatialPolygonsDataFrame(poly.district, all.stats.district, match.ID = F)
+polydata.province <- SpatialPolygonsDataFrame(poly.province, all.stats.province, match.ID = FALSE)
+polydata.district <- SpatialPolygonsDataFrame(poly.district, all.stats.district, match.ID = FALSE)
 
 ########################### ANNUAL QUARTER PLOTS #################################
 data <- data %>%
@@ -278,9 +279,9 @@ colnames(all.stats.province2) <- c('rain.Quarter1', 'rain.Quarter2',
 
 # average rain total and tavg for each district per quarter
 rain.district2 <- as.data.frame(tapply(data$rainTot,
-                                       list(data$District, data$Quarter), mean))
+                                       list(data$DISTCODE, data$Quarter), mean))
 tavg.district2 <- as.data.frame(tapply(data$tavg,
-                                       list(data$District, data$Quarter), mean))
+                                       list(data$DISTCODE, data$Quarter), mean))
 all.stats.district2 <- cbind(rain.district2, tavg.district2)
 colnames(all.stats.district2) <- c('rain.Quarter1', 'rain.Quarter2',
                                    'rain.Quarter3', 'rain.Quarter4',
@@ -306,6 +307,15 @@ spplot(polydata.province2, c('rain.Quarter1', 'rain.Quarter2',
 ```
 
 
+There are a number of conclusions we can draw from these map visualizations. First, rainfall seemed to be higher for quarters 1 and 4 (highest for quarter 1). This is consistent with the lag time for rainfall that is most associated with malaria incidence. The optimal lag time for rainfall was found to be 4 weeks prior to malaria incidence. Thus, it makes sense that the highest total rainfall occurs in quarter 1. We previously saw that quarters 1 and 2 have a higher proportion of cases per 1000 under 5. Thus, it is expected that rainfall would be highest during quarter 1. Also, there seems to be almost zero rainfall on average in quarter 3. These maps indicate that rainfall varies across provinces and also varies across annual quarters. 
+
+
+Next, during quarter 1, the northern region had the largest average total weekly rainfall compared to the other regions In fact, the Niassa province, which is in the northern region, experienced approximately 23.94 mm of weekly total rainfall, on average. The province that experiences the second largest weekly total rainfall during this quarter was Cabo Delgado, another province in the northern region, with an average weekly total rainfall of 19.58 mm. 
+
+
+There is one interesting pattern that should be discussed. It might have been expected that the northern region/provinces would have higher rainfall year-round due to the fact that this area has a higher level of malaria transmission compared to other regions/provinces. However, in quarters 2-4, it is clear that this is not the case. For example, in quarter 4, it seems that the central region, even some portion of the southern region, experiences more rainfall in comparison to the northern region. This indicates that the northern region may experience more inconsistent and extreme climatic patterns in comparison to the other regions.$\vspace{0.5cm}$
+
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # plot avg. temperature for each province aggregated over annual quarters
 spplot(polydata.province2, c('tavg.Quarter1', 'tavg.Quarter2',
@@ -318,13 +328,23 @@ spplot(polydata.province2, c('tavg.Quarter1', 'tavg.Quarter2',
 ```
 
 
+The plots above show average temperature across provinces per annual quarter. It appears that quarter 4 had the highest average temperature compared to quarters 1-3. This is consistent with the lag time of temperature that is most associated with malaria incidence, which was found to be 16 weeks prior to malaria incidence. We would expect the highest temperatures to be in quarter 4 based on this information, and this seemed to be the case. Quarter 1 seemed to have the second highest average temperature across provinces. 
+
+
+Unlike rainfall, the northern region/provinces generally seemed to have higher temperature year-round in comparison to the other regions/provinces. In particular, the two provinces that seemed to have the highest average temperatures year round were Nampula and Cabo Delgado. It is also worth noting that the temperature across all provinces and across all quarters only varies by about 8 degrees Celcius. 
+
+
+####*Quarterly Malaria Incidence Across Mozambique Provinces*
+
+Now we want to understand if malaria incidence is clustered in a particular region/province in Mozambique. As shown previously, we would expect the northern region to have a higher malaria incidence compared to the other regions/provinces.$\vspace{0.5cm}$  
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # avg. cptu5 for each province
 cptu5.province <- as.data.frame(tapply(data$cptu5, list(data$Province), mean))
 colnames(cptu5.province) <- c("avg.cptu5")
 
 # avg. cptu5 for each district
-cptu5.district <- as.data.frame(tapply(data$cptu5, list(data$District), mean))
+cptu5.district <- as.data.frame(tapply(data$cptu5, list(data$DISTCODE), mean))
 colnames(cptu5.district) <- c("avg.cptu5")
 
 # rename rows to match shape files
@@ -344,7 +364,7 @@ colnames(cptu5.province2) <- c('cptu5.Quarter1', 'cptu5.Quarter2',
 
 # average cptu5 for each district per quarter
 cptu5.district2 <- as.data.frame(tapply(data$cptu5,
-                                        list(data$District, data$Quarter), mean))
+                                        list(data$DISTCODE, data$Quarter), mean))
 colnames(cptu5.district2) <- c('cptu5.Quarter1', 'cptu5.Quarter2',
                                'cptu5.Quarter3', 'cptu5.Quarter4')
 
@@ -364,6 +384,15 @@ spplot(polydata.cptu5.province2, c('cptu5.Quarter1', 'cptu5.Quarter2',
        main = "Malaria Cases per 1000 Under 5",
        as.table = TRUE, col="transparent")
 ```
+
+
+Across quarters and across provinces, it appears that the Niassa and the Cabo Delgado provinces seem to have the highest average malaria incidence in CPT-U5. Also, malaria incidence seemed to be increased in annual quarters 1 and 2. This is consistent with the previous bar graph visualizations that indicated the northern region had higher malaria incidence compared to the southern, central, and coastal regions and that quarters 1 and 2 had higher malaria incidence. 
+
+
+The higher proportion of CPT-U5 in the northern region overlaps with the patterns we see for total rainfall and temperature. Generally speaking, the provinces with increased malaria incidence tended to have higher rainfall and temperature. The particular provinces I am refering to are the Niassa, Nampula, and Cabo Delgado provinces. However, this wasn't necessarily across the whole year. While the northern region/provinces seemed to have the highest average temperature over the whole year, it was discovered that rainfall was not consistently high or low for all provinces throughout the year. Thus, it can be concluded that the northern region may have more extreme, but annually inconsistent, climatic patterns, which likely provide the optimal enviroment for the malaria parasite to grow and be transmitted.  
+
+
+Another interesting detail regarding malaria incidence was discovered. In the appendix of this report is a map plot that shows quarterly malaria incidence in CPT-U5 across *districts*. The map indicates that there is one district that seems to have an unusually high CPT-U5 malaria incidence. This district is the Meluco district in the Cabo Delgado province (average CPT-U5 is approximately 40). Another district that seems to have a high CPT-U5 malaria incidence is the Nipepe district in the Niassa province. Both of these provinces are in the northern region of Mozambique.  
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8, dpi=125}
@@ -401,7 +430,7 @@ ts.data.province <- data.red %>%
 ggplot(data=ts.data.province, aes(x=hypoth.date, y=mean.cptu5)) +
   geom_line(aes(color=Province)) +
   labs(y="Cases per 1000 Under 5", x="Date",
-       title="Provencial Malaria Incidence Over Time") +
+       title="Provincial Malaria Incidence Over Time") +
   scale_color_manual(values = c("purple4", "purple1", "darkblue", "blue",
                                 "deepskyblue3", "cyan2", "yellow1",
                                 "orange1", "deeppink1", "deeppink4"))
