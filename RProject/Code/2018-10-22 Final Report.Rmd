@@ -53,7 +53,7 @@ In this report, the spatial and temporal trends in malaria incidence in children
 The ultiamte goal of this report was to uncover underlying trends in malaria incidence in Mozambique. In particular, the visuals presented aimed to shed light on geographic and seasonal trends in malaria incidence over time and their association with trends in certain climatic conditions as well. As discussed previously, increased rainfall and temperature are strongly associated with increased malaria transmission. However, the lag times of rainfall and temperature that are most associated with malaria incidence are not currently known. The relationships between these two climatic conditions and malaria incidence were extensively explored here. In better understanding these trends and their associations with one another, preventative resources could be allocated more effectively to vulnerable areas in Mozambique and potentially decrease malaria transmission.
 
 
-The final data set used in subsequent visualizations consisted of weekly data for the 142 districts of Mozambique from 2010 to 2017. Data was collected for the first 9 weeks of 2017. Due to the lack of data for this year, I chose to exclude 2017 data in this report. Variables measured included weekly total rainfall (mm), average rainfall (mm), average temperature (Celcius), relative humidity (%), saturation vapor pressure deficit (mmHg), surface barometric pressure (hPa), total district population, proportion of total population under five years of age, number of malaria cases under five reported, etc. The outcome-of-interest was cases per 1000 in children under five, which was calculated as follows:
+The final data set used in subsequent visualizations consisted of weekly data for the 142 districts of Mozambique from 2010 to 2017. The first two weeks of data for 2010 were missing. Also, data was collected only for the first 9 weeks of 2017. Due to the lack of data for this year, I chose to exclude 2017 data in this report. Variables measured included weekly total rainfall (mm), average rainfall (mm), average temperature (Celcius), relative humidity (%), saturation vapor pressure deficit (mmHg), surface barometric pressure (hPa), total district population, proportion of total population under five years of age, number of malaria cases under five reported, etc. The outcome-of-interest was cases per 1000 in children under five, which was calculated as follows:
 
 
 $$
@@ -313,7 +313,7 @@ There are a number of conclusions we can draw from these map visualizations. Fir
 Next, during quarter 1, the northern region had the largest average total weekly rainfall compared to the other regions In fact, the Niassa province, which is in the northern region, experienced approximately 23.94 mm of weekly total rainfall, on average. The province that experiences the second largest weekly total rainfall during this quarter was Cabo Delgado, another province in the northern region, with an average weekly total rainfall of 19.58 mm. 
 
 
-There is one interesting pattern that should be discussed. It might have been expected that the northern region/provinces would have higher rainfall year-round due to the fact that this area has a higher level of malaria transmission compared to other regions/provinces. However, in quarters 2-4, it is clear that this is not the case. For example, in quarter 4, it seems that the central region, even some portion of the southern region, experiences more rainfall in comparison to the northern region. This indicates that the northern region may experience more inconsistent and extreme climatic patterns in comparison to the other regions.$\vspace{0.5cm}$
+There is one interesting pattern that should be discussed. It might have been expected that the northern region/provinces would have higher rainfall year-round due to the fact that this area has a higher level of malaria transmission compared to other regions/provinces. However, in quarters 2-4, it is clear that this is not the case. For example, in quarter 4, it seems that the central region, even some portion of the southern region, experiences more rainfall in comparison to the northern region. This indicates that the northern region may experience more inconsistent and extreme climatic patterns in comparison to the other regions. Map plots showing average quarterly total rainfall across *districts* can be found in the appendix. $\vspace{0.5cm}$
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -331,7 +331,7 @@ spplot(polydata.province2, c('tavg.Quarter1', 'tavg.Quarter2',
 The plots above show average temperature across provinces per annual quarter. It appears that quarter 4 had the highest average temperature compared to quarters 1-3. This is consistent with the lag time of temperature that is most associated with malaria incidence, which was found to be 16 weeks prior to malaria incidence. We would expect the highest temperatures to be in quarter 4 based on this information, and this seemed to be the case. Quarter 1 seemed to have the second highest average temperature across provinces. 
 
 
-Unlike rainfall, the northern region/provinces generally seemed to have higher temperature year-round in comparison to the other regions/provinces. In particular, the two provinces that seemed to have the highest average temperatures year round were Nampula and Cabo Delgado. It is also worth noting that the temperature across all provinces and across all quarters only varies by about 8 degrees Celcius. 
+Unlike rainfall, the northern region/provinces generally seemed to have higher temperature year-round in comparison to the other regions/provinces. In particular, the two provinces that seemed to have the highest average temperatures year round were Nampula and Cabo Delgado. It is also worth noting that the temperature across all provinces and across all quarters only varies by about 8 degrees Celcius. Map plots showing average quarterly temperature across *districts* can be found in the appendix. 
 
 
 ####*Quarterly Malaria Incidence Across Mozambique Provinces*
@@ -386,14 +386,18 @@ spplot(polydata.cptu5.province2, c('cptu5.Quarter1', 'cptu5.Quarter2',
 ```
 
 
-Across quarters and across provinces, it appears that the Niassa and the Cabo Delgado provinces seem to have the highest average malaria incidence in CPT-U5. Also, malaria incidence seemed to be increased in annual quarters 1 and 2. This is consistent with the previous bar graph visualizations that indicated the northern region had higher malaria incidence compared to the southern, central, and coastal regions and that quarters 1 and 2 had higher malaria incidence. 
+Across quarters and across provinces, it appears that the Niassa and the Cabo Delgado provinces seemed to have the highest average malaria incidence in CPT-U5. Also, malaria incidence seemed to be increased in annual quarters 1 and 2. This is consistent with the previous bar graph visualizations that indicated the northern region had higher malaria incidence compared to the southern, central, and coastal regions and that quarters 1 and 2 had higher malaria incidence. 
 
 
-The higher proportion of CPT-U5 in the northern region overlaps with the patterns we see for total rainfall and temperature. Generally speaking, the provinces with increased malaria incidence tended to have higher rainfall and temperature. The particular provinces I am refering to are the Niassa, Nampula, and Cabo Delgado provinces. However, this wasn't necessarily across the whole year. While the northern region/provinces seemed to have the highest average temperature over the whole year, it was discovered that rainfall was not consistently high or low for all provinces throughout the year. Thus, it can be concluded that the northern region may have more extreme, but annually inconsistent, climatic patterns, which likely provide the optimal enviroment for the malaria parasite to grow and be transmitted.  
+The higher proportion of CPT-U5 in the northern region overlapped with the patterns we see for total rainfall and temperature. Generally speaking, the provinces with increased malaria incidence tended to have higher rainfall and temperature. The particular provinces I am refering to are the Niassa, Nampula, and Cabo Delgado provinces. However, this wasn't necessarily across the whole year. While the northern region/provinces seemed to have the highest average temperature over the whole year, it was discovered that rainfall was not consistently high or low for all provinces throughout the year. Thus, it can be concluded that the northern region may have more extreme, but annually inconsistent, climatic patterns, which likely provide the optimal enviroment for the malaria parasite to grow and be transmitted.  
 
 
-Another interesting detail regarding malaria incidence was discovered. In the appendix of this report is a map plot that shows quarterly malaria incidence in CPT-U5 across *districts*. The map indicates that there is one district that seems to have an unusually high CPT-U5 malaria incidence. This district is the Meluco district in the Cabo Delgado province (average CPT-U5 is approximately 40). Another district that seems to have a high CPT-U5 malaria incidence is the Nipepe district in the Niassa province. Both of these provinces are in the northern region of Mozambique.  
+Another interesting detail regarding malaria incidence was discovered. In the appendix of this report is a map plot that shows quarterly malaria incidence in CPT-U5 across *districts*. The map indicates that there is one district that seems to have an unusually high CPT-U5 malaria incidence across quarters. This district is the Meluco district in the Cabo Delgado province (average CPT-U5 is approximately 40). Another district that seems to have a high CPT-U5 malaria incidence is the Nipepe district in the Niassa province. Both of these provinces are in the northern region of Mozambique. These districts are likely contributing the most to the high malaria incidence observed in the northern region. Again, this district-level map plot can be found in the appendix of the report. 
 
+
+####*Regional and Provincial Malaria Incidence Over Time*
+
+Finally, we want to see how Malaria is changing over *all* time, not just by quarter. As mentioned, due to the lack of data available for the year 2017, this year was left out of the visualizations/analyses for this report. While the data did not provide exact dates, we can still visualize the trends in malaria transmission weekly from 2010 to 2016. These time series graphs are shown below, in which one plot stratified CPT-U5 across regions and the other across provinces.$\vspace{0.5cm}$  
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8, dpi=125}
 data.red <- data %>%
@@ -438,6 +442,14 @@ ggplot(data=ts.data.province, aes(x=hypoth.date, y=mean.cptu5)) +
 ```
 
 
+These time series plots show that there seemed to be a steady increase in malaria incidence in CPT-U5 from 2010 to 2016 across regions and/or provinces. These graphs also indicate that malaria incidencemay have increased slightly more over time in the northern region/provinces and less over time in the southern region/provinces. One other key observation is that the fluctuation in CPT-U5 in the northern region is much greater than that in the southern region. Previously we discovered that the northern region may have more extreme fluctuations in climatic conditions over time, and this may be translating into a greater fluctuation (more extreme sinusoidal pattern) in malaria incidence compared to the other regions in Mozambique. 
+
+There is one other factor that may be influencing the patterns we observed in the time series plots. The capital of Mozambique is Maputo, which is located in the southern region of the country. One reason there were less observed fluctuations and also less of an increase in malaria incidence in CPT-U5 in the souther region/provinces may be because those in the southern region are closer to the capital, which is highly urbanized compared to the rest of the country. Thus, the citizens in this region may have more access to health care resources that reduce malaria transmission.
+
+
+Another to show if malaria incidence is increasing over time is via seasonal plots, shown below. Seasonal plots for rainfall and temperature are also shown. $\vspace{0.5cm}$  
+
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
 g5 <- ggplot(data=data.red, aes(x=Epiweek, y=cptu5, group=factor.Epiyear)) +
   geom_smooth(aes(color=factor.Epiyear), se=FALSE) +
@@ -471,6 +483,12 @@ g7 <- ggplot(data=data.red, aes(x=Epiweek, y=tavg, group=factor.Epiyear)) +
 grid.arrange(g5, g6, g7, nrow=1)
 
 ```
+
+
+Here, we can again see that malaria incidence increased over time from 2010 to 2016. Also, these seasonal plots indicate that there were rainfall and temperature increases over time at the beginning of the year and towards the end of the year. Particularly in 2016, there was a drastic increase in rainfall and temperature at the beginning and the end of that year. 
+
+
+###Conclusions
 
 
 ###Appendix
