@@ -57,11 +57,11 @@ The final data set used in subsequent visualizations consisted of weekly data fo
 
 
 $$
-CPTU5 = [\frac{CU5}{(Population_{total}*U5_{weight})}]*1000
+CPT-U5 = [\frac{C-U5}{(Population_{total}*U5_{weight})}]*1000
 $$
 
 
-$CPTU5$ is cases per 1000 under 5, $CU5$ is total number of cases under 5, $Population_{total}$ is the total population of the district, and $U5_{weight}$ is the proportion of the total population under five years of age. A proportion of cases was used as the outcome rather than simply the number of malaria cases in children under five to control against the fact that certain districts have a larger total population than others (thus, more malaria cases simply due to a larger population in that district).  
+$CPT-U5$ is cases per 1000 under 5, $C-U5$ is total number of cases under 5, $Population_{total}$ is the total population of the district, and $U5_{weight}$ is the proportion of the total population under five years of age. A proportion of cases was used as the outcome rather than simply the number of malaria cases in children under five to control against the fact that certain districts have a larger total population than others (thus, more malaria cases simply due to a larger population in that district).  
 
 
 ###Results
@@ -89,7 +89,7 @@ grid.arrange(g1, g2, nrow = 1)
 ```
 
 
-From a first glance, the smoothing splines above show that there is a non-linear relationship between rainfall and CPT-U5. The graphs also indicate that, overall, the northern region of Mozambique tends to have higher proportion of CPT-U5, while the southern region tends to have a lower porportion of CPT-U5. While there appears to be a somewhat quadratic trend between CPT-U5 and rainfall, it is important to note that this could be due to the fact that the right tails of the smooth splines are heavily influenced by the small number of extremely large rainfall data points. It is well-known that cubic smoothing spline patterns can be heavily influenced by "outliers" in the data, and one should be cautious when interpretting smoothing spline patterns if extreme data values are present.$\vspace{0.5mm}$ 
+From a first glance, the smoothing splines above show that there is a non-linear relationship between rainfall and CPT-U5. The graphs also indicate that, overall, the northern region of Mozambique tends to have a higher proportion of CPT-U5, while the southern region tends to have a lower porportion of CPT-U5. While there appears to be a somewhat quadratic trend between CPT-U5 and rainfall, it is important to note that this could be due to the fact that the right tails of the smooth splines are heavily influenced by the small number of extremely large rainfall data points. It is well-known that cubic smoothing splines can be heavily influenced by "outliers" in the data, and one should be cautious when interpretting smoothing splines if extreme data values are present.$\vspace{0.5cm}$ 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=4, fig.width=8}
@@ -107,17 +107,20 @@ grid.arrange(g3, g4, nrow = 1)
 ```
 
 
-The plots above indicate a potential quadratic, maybe even quartic relationship between average temperature and CPT-U5. Similarly to the previous graphs, this indicates that, overall, the nothern region tends to have a higher proportion of CPT-U5, while the southern region tends to have a lower proportion of CPT-U5.   
+The plots above indicate a potential quadratic, maybe even quartic relationship between average temperature and CPT-U5. Similarly to the previous graphs, this indicates that, overall, the nothern region tends to have a higher proportion of CPT-U5, while the southern region tends to have a lower proportion of CPT-U5. Also, these plots show that there is a "sweet spot" for malaria incidence in terms of temperature. As discussed previously, it is true that malaria transmission tends to increase with an increase in temperature, but this is only up to a certain point. One can imagine that as temperature continues to increase, there may be a threshold at which malaria parasites cannot survive. Thus, this explains why we see a drop-off in the incidence of malaria beyond a certain temperature.   
 
 
 ####*Optimal Lag of Total Rainfall and Average Temperature*
+
+
+It is known that there is a strong association between malaria incidence and climatic conditions, such as rainfall and temperature. However, the optimal lag time between these climatic conditions and malaria incidence is not currently well known. The cross-correlation function is helpful in determining which lags of the climatic conditions that may be useful predictors of CPT-U5. It is important to note that a negative lag indicates that there is a correlation between the climatic condition at a time prior to *t* and malaria incidence at time *t*. A positive lag indicates that there is a correlation between the climatic condition at a time after *t* and malaria incidence at time *t*. Below are the cross-correlation function plots for weekly total rainfall and weekly average temperature. Also included below is a table that summizes the lag assocated with the largest $|ACF|$ value. $\vspace{0.5cm}$ 
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
 # ccf plots to determine optimal lead length
 par(mfrow = c(1,2))
 rain.ccf <- ccf(data$rainTot, data$cptu5, main = "CCF Plot: Rainfall") # optimal lead ~ 4
 temp.ccf <- ccf(data$tavg, data$cptu5, main = "CCF Plot: Temperature") # optimal lead ~ 15
-
 # numerical estimates of max ACF and corresponding lag/lead
 max.acf1 <- max(rain.ccf$acf) # 0.1197 = max ACF
 rain.lag <- rain.ccf$lag[which(rain.ccf$acf > max.acf1-0.0001 & rain.ccf$acf < max.acf1+0.0001)] # -4
@@ -145,6 +148,15 @@ knitr::kable(ccf.results, format = "latex", booktabs = TRUE,
    column_spec(3, width = "6em")
 
 ```
+
+
+Here, we can see that the optimal lags for total rainfall and temperature are -4 and -16, respectively. This means that rainfall 4 weeks prior to *t* is most strongly correlated with CPT-U5 at *t* and average temperature 16 weeks prior to *t* is most strongly correlated with CPT-U5 at *t*. It was originally thought that rainfall and temperature lag times typically ranged from 2 to 8 weeks. While the results from the CCF Rainfall plot are consistent with this range of expected lag times, the CCF Temperature plot indicates that the lag time for temperature is much greater than originally anticipated. One key point that should be made is that the ACF values for lags proximal to the -16 lag seems to be extremely close in value to the ACF at lag -16. So while the -16 lag had the highest $|ACF|$, this was only marginally so. Another key point that should be made is that the cross-correlation function uses the Pearson correlation method in its calculation of the ACF. It is possible that the correlation between the climatic condition variables and the outcome-of-interest are not linearly correlated. This may be why we see a difference in the actual optimal lag time for temperature here versus the anticipated lag time.    
+
+
+####*Quarterly Malaria Incidence Across Mozambique Regions and Provinces*
+
+
+Rather than aggregating over all time, the graphs below show malaria incidence in CPT-U5 for each annual quarter. Visualizing the data as such will give a better sense of the dynamic trend in malaria incidence over time. Also, in breaking up data visualizations into annual quarters, the temporal trends in the climatic conditions and their relationship with malaria incidence over time will hopefully become more apparent as well. For the graphs below and for the remaining data visualizations, the data will be broken up via annual quarters. Quarter 1 was defined as weeks 1-13, quarter 2 as weeks 14-26, quarter 3 as weeks 27-39, and quarter 4 as weeks 40+. For the year 2015, there were 53 weeks of data recorded, and for the purposes of this report, week 53 was chosen to be included in quarter 4. The bar graphs below show the average CPT-U5 across regions (bar graph 1) and the average CPT-U5 across provinces (bar graph 2).$\vspace{0.5cm}$ 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=5, fig.width=8, dpi=125}
@@ -189,6 +201,8 @@ ggplot(data=avg.quarter.cptu5.by.region) +
 ```
 
 
+The graphs show that, on average, the northern region had the highest average CPT-U5 (average CPT-U5: 15.57) while the southern region had the lowest average CPT-U5 (average CPT-U5: 5.87). Across all four regions, annual quarters 1 and 2 seemed to have a higher averagen CPT-U5 in comparison to quarters 3 and 4. 
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=6, fig.width=8, dpi=125}
 ggplot(data=avg.quarter.cptu5.by.province) +
   geom_bar(stat='identity', aes(x=Quarter, y=mean.cptu5, fill=Province)) +
@@ -200,6 +214,18 @@ ggplot(data=avg.quarter.cptu5.by.province) +
                                "orange1", "deeppink1", "deeppink4"))
 
 ```
+
+
+Bar graph 2 is stratified by provinces in Mozambique rather than regions to get a better sense of which provinces are contributing more to the regional patterns observed in the previous graph. Here, we can see that the Niassa province had the highest recorded average CPT-U5 and the Maputo province the lowest recorded average CPT-U5. The Niassa province is located in the northern region of Mozambique, while the Maputo province is located in the southern region of Mozambique. Again, annual quarters 1 and 2 seems to have a higher average CPT-U5 in comparison to quarters 3 and 4 at the provencial level, similarly to what was observed at the regional level. 
+
+
+Two observations become exceedingly obvious just from the bar graphs alone. First, malaria incidence is geogrpahically dynamic. Second, malaria incidence is temporally dynamic. 
+
+
+####*Quarterly Total Rainfall and Temperature Across Mozambique Provinces*
+
+
+Now that the optimal lag times for total rainfall and temperature have been determined, it would be beneficial to understand the regional and temporal differences in total rainfall and temperature across Mozambique.    
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -387,7 +413,7 @@ ggplot(data=ts.data.province, aes(x=hypoth.date, y=mean.cptu5)) +
 g5 <- ggplot(data=data.red, aes(x=Epiweek, y=cptu5, group=factor.Epiyear)) +
   geom_smooth(aes(color=factor.Epiyear), se=FALSE) +
   labs(y="Cases per 1000 Under 5",
-       title="Seasonal Plot: Malaria Cases per 1000 Under 5") +
+       title="Seasonal Plot: CPT-U5") +
   scale_color_discrete(name = "Epiyear") +
   scale_color_manual(values = c("purple4", "purple1", "darkblue",
                                "deepskyblue3", "yellow1", "orange1",
@@ -419,6 +445,7 @@ grid.arrange(g5, g6, g7, nrow=1)
 
 
 ###Appendix
+####*Histograms Showing Distibution of CPT-U5 and Transformed CPT-U5*
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.height=3, fig.width=8}
 # distribution of the outcome
 ag1 <- ggplot(data=data) +
@@ -440,6 +467,7 @@ grid.arrange(ag1, ag2, ag3, nrow=1)
 ```
 
 
+####*Spatial Maps of Quarterly Rainfall, Temperature, and CPT-U5 Across Districts*
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #plot avg. total rainfall for each district aggregated over annual quarters
 spplot(polydata.district2, c('rain.Quarter1', 'rain.Quarter2',
