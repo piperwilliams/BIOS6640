@@ -21,6 +21,7 @@ library(sp)
 library(maptools) 
 library(knitr)
 library(kableExtra)
+library(nlme)
 
 # read in data set
 data <- read.csv("/Users/piper/Piper Documents/R and Python/Project 1/DataRaw/MozSyntheticMalaria.csv")
@@ -44,7 +45,7 @@ Malaria is a parasitic blood disease that is most commonly transmitted via the *
 In the year 2016, there were approximately 216 million reported cases of malaria  and 450,000 malaria-related deaths worldwide.$^3$ In the same year, 91% of all malaria-related deaths were concentrated in the World Health Organization (WHO) African region, which includes the country of Mozambique.$^3$ In Mozambique, approximately four to six million malaria cases are reported each year. While this disease is known to be largely preventable and curable, it continues to be an epidemic in Mozambique and other countries in sub-Saharan Africa.$^4$ Allotting preventative resources to highly vunerable areas, which include insecticide-treated bednets and indoor residual spraying, educating citizens in these regions about the importance of using these resources, and malaria surveillance are each critical components of malaria prevention and possible elimination.$^5$ To ensure that malaria prevention resources are distributed and implemented effectively, the trends in malaria incidence must be better understood. 
 
 
-In this report, the spatial and temporal trends in malaria incidence in children under five and their relationship to specific climatic conditions in Mozambique were further explored. Increased rainfall and increased ambient temperatures have previously been shown to be associated with increased malaria transmission, as these climate conditions provide an optimal environment for the malaria parasite to be transmitted to the *Anopheles* mosquito and, ultimately, to humans.$^1$ However, the time at which these climatic conditions are associated with malaria exposure remains unknown. Increased rainfall creates a larger number of collections of water, which serve as prime breeding sites for the mosquito species.$^1$ Increased ambient temperatures shortens the malaria parasite's growth cycle, which increases the probability of transmission from an infected mosquito mother to her offspring. In uncovering these spatio-temporal relationships and their association with climatic trends, there is an increased potential to prevent malaria transmission in Mozambique and other countries around the world. $\vspace{0.25cm}$
+In this report, the spatial and temporal trends in malaria incidence in children under five and their relationship to specific climatic conditions in Mozambique were further explored. Increased rainfall and increased ambient temperatures have previously been shown to be associated with increased malaria transmission, as these climate conditions provide an optimal environment for the malaria parasite to be transmitted to the *Anopheles* mosquito and, ultimately, to humans.$^1$ However, the time at which these climatic conditions are associated with malaria exposure remains unknown. Increased rainfall creates a larger number of collections of water, which serve as prime breeding sites for the mosquito species.$^1$ Increased ambient temperatures shortens the malaria parasite's growth cycle, which increases the probability of transmission from an infected mosquito mother to her offspring.$^1$ In uncovering these spatio-temporal relationships and their association with climatic trends, there is an increased potential to prevent malaria transmission in Mozambique and other countries around the world. $\vspace{0.25cm}$
 
 
 ###Description of Research Problem and Data
@@ -150,7 +151,7 @@ knitr::kable(ccf.results, format = "latex", booktabs = TRUE,
 ```
 
 
-Here, we can see that the optimal lags for total rainfall and temperature were -4 and -16, respectively. This means that rainfall 4 weeks prior to *t* is most strongly correlated with CPT-U5 at *t* and average temperature 16 weeks prior to *t* is most strongly correlated with CPT-U5 at *t*. It was originally thought that rainfall and temperature lag times typically ranged from 2 to 8 weeks. While the results from the CCF Rainfall plot are consistent with this range of expected lag times, the CCF Temperature plot indicates that the lag time for temperature was much longer than originally anticipated. One key point that should be made is that the ACF values for lags proximal to the -16 lag seemed to be extremely close in value to the ACF at lag -16. So while the -16 lag had the highest $|ACF|$, this was only marginally so. Another key point that should be made is that the cross-correlation function uses the Pearson correlation method in its calculation of the ACF. It is possible that the correlation between the climatic condition variables and the outcome-of-interest are not linearly correlated. This may be why we see a difference in the actual optimal lag time for temperature here versus the anticipated lag time.    
+Here, we can see that the optimal lags for total rainfall and temperature were -4 and -16, respectively. This means that rainfall 4 weeks prior to *t* is most strongly correlated with CPT-U5 at *t* and average temperature 16 weeks prior to *t* is most strongly correlated with CPT-U5 at *t*. It was originally thought that rainfall and temperature lead times typically ranged from 2 to 8 weeks. While the results from the CCF Rainfall plot are consistent with this range of expected lag times, the CCF Temperature plot indicates that the lag time for temperature was much longer than originally anticipated. One key point that should be made is that the ACF values for lags proximal to the -16 lag seemed to be extremely close in value to the ACF at lag -16. So while the -16 lag had the highest $|ACF|$, this was only marginally so. Another key point that should be made is that the cross-correlation function uses the Pearson correlation method in its calculation of the ACF. It is possible that the correlation between the climatic condition variables and the outcome-of-interest are not linearly correlated. This may be why we see a difference in the actual optimal lag time for temperature here versus the anticipated lag time.    
 
 
 ####*Quarterly Malaria Incidence Across Mozambique Regions and Provinces*
@@ -490,6 +491,40 @@ Here, we can again see that malaria incidence increased over time from 2010 to 2
 
 ###Conclusions
 
+Based on the results presented, it can be concluded that malaria incidence clearly has a geographical and temporal trend. In particular, there seemed to be larger malaria incidence in CPT-U5 in the northern region (Niassa, Cabo Delgado, and Nampula provinces) of Mozambique and smaller malaria incidence in the southern region (particularly for the Maputo province). Malaria incidence was higher in annual quarters 1 and 2 in comparison to quarters 3 and 4. Also, from 2010 to 2016, malaria incidence seemed to increase across all regions/provinces over time. 
+
+Malaria incidence was also strongly associated with climatic conditions, such as weekly total rainfall and average weekly temperature. It was found that total rainfall with a 4-week *lead* time (-4-week lag time) was most strongly associated with malaria incidence, while average temperature with a 16-week lead time (-16 week lag time) was most strong associated with malaria incidence. Typically, higher rainfall and higher temperature, within a certain limit, were associated with an increase in malaria incidence in CPT-U5. Overall, higher rainfall and higher temperatures were observed in the northern region of Mozambique. However, the northern region had unusually high weekly total rainfall in quarter 1, but did not seem to maintain a high rainfall throughout the year. In fact, in quarter 4, it appeared that the central and even portions of the southern region had higher weekly total rainfall compared to the northern region. This indicated that the northern region may have more erratic and extreme climate patterns, which may give rise to a more optimal environment for malaria transmission.
+
+
+There are a few key findings that were unexpected in the exploration of this data. First, there were two districts found that had an unusually high malaria incidence across all four annual quarters: the Meluco district in the Cabo Delgado province and the Nipepe district in the Niassa province. The reasons why this may be occuring should be further explored in future research. Second, the time series plots and seasonal plots indicate that malaria incidence in CPT-U5 is on the rise. It was also discovered that rainfall and temperature in annual quarters 1 and 4 increased from 2010 to 2016. The relationship between these climatic conditions may be somewhat sensitive, in that small changes in the climatic conditions could result in potentially drastic increases in malaria incidence. 
+
+
+From the results presented in this report, it is apparent that malaria transmission preventative resources, such as bednets, indoor residual spraying, and educating citizens on the importance of these resources, should be more effectively allocated to those in the northern region. These results may also call attention to the fact that those in the northern region may lack access to necessary health care resources. It was shown that the Maputo province overall had the lowest malaria incidence. While geography and climate drive malaria incdicence, urbanization drives it as well. Those living in or proximal to more urbanized areas are likely to have more available health care access, which is also a potential factor to consider along with other spatial, temporal, and climatic factors. 
+
+
+The next steps I would recommend would be to find a way to formally model this data to more formally explain the trends observed in this data. A linear mixed model with a random intercept for district was fit, the outcome was CPT-U5, and the covariates included in the model were 1.) 4-week leading total rainfall, 2.) 16-week leading temperature, 3.) annual quarter, 4.) Epiyear, and 5.) Mozambique region. The code for this model can be found in the appendix. From this model, the northern region, on average, had the highest CPT-U5 (t = 4.56, p < 0.0001). For every one-year increase, CPT-U5 increases on average by 1.33 CPT-U5 (t = 176.49, p < 0.0001), etc. This model was fit to get an idea of what to expect. However, in the future, it is highly recommended that more time is dedicated to determining what longitudinal model and covariance structure best fits the data. Also, the relationhships between the variables of interest should be further explored to account for potential non-linear, more complex trends between the variables-of interest. 
+
+
+###Acknowledgements
+
+Data and spatial mapping plots and corresponding code was provided by Dr. Katie Colborn from the Department of Biostatistics at the University of Colorado Anschutz Medical Campus.
+
+
+###Reproducible Research
+All materials for this project can be found on GitHub using the following URL: https://github.com/BIOS6624-UCD/bios6624-piperwilliams/tree/master/Project1. Here, background information, relevant R scripts/R Markdown files, and R Markdown output that is relevant to the final analyses are all present. The formal citation for this GitHub repository can be found in the references below. 
+
+
+###References
+1. Parasites - Malaria. Centers for Disease Control and Prevention. https://www.cdc.gov/parasites/malaria/index.html. Published October 9, 2018. Accessed October 26, 2018.
+
+2. Key points: World malaria report 2017. World Health Organization. https://www.who.int/malaria/media/world-malaria-report-2017/en/#Malaria elimination. Published December 14, 2017. Accessed October 26, 2018.
+
+3. Malaria. World Health Organization. http://www.who.int/malaria/en/. Published October 5, 2018. Accessed October 27, 2018.
+
+4. Preventable, Curable and Claiming Lives: Malaria. North Star Alliance. http://www.northstar-alliance.org/preventable-curable-and-claiming-lives-malaria/. Published April 25, 2013. Accessed October 27, 2018.
+
+5. Colborn KL, Giorgi E, Monaghan AJ, et al. Spatio-temporal modelling of weekly malaria incidence in children under 5 for early epidemic detection in Mozambique. Scientific reports. 2018;8(1):9238.
+
 
 ###Appendix
 ####*Histograms Showing Distibution of CPT-U5 and Transformed CPT-U5*
@@ -508,8 +543,6 @@ ag3 <- ggplot(data=data) +
   labs(x=expression(sqrt('CPT-U5')), y='Frequency')
                                                     # seems normally distributed
 grid.arrange(ag1, ag2, ag3, nrow=1)
-
-# If I were to model the data, I would likely square-root transform the outcome
 
 ```
 
@@ -541,6 +574,23 @@ spplot(polydata.cptu5.district2, c('cptu5.Quarter1', 'cptu5.Quarter2',
        as.table = TRUE, col="transparent")
 
 ```
+
+####*Hypothetical Statistical Model*
+```{r, warning=FALSE, message=FALSE, results=FALSE}
+lagdata <- data %>%
+  group_by(DISTCODE, Epiyear) %>%
+  mutate(rainlead4 = lead(rainTot, 4)) %>%
+  mutate(templead16 = lead(tavg, 16))
+
+lagdata <- na.omit(lagdata)
+
+model <- lme(cptu5 ~ rainlead4 + templead16 + Quarter + Epiyear + Region, 
+             data = lagdata, random = (~ 1 | DISTCODE)) # LMM with random slope
+anova(model) # overall F 
+summary(model) # details of model, bad model fit
+
+```
+
 
 
 
