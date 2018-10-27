@@ -511,7 +511,7 @@ Data and spatial mapping plots and corresponding code was provided by Dr. Katie 
 
 
 ###Reproducible Research
-All materials for this project can be found on GitHub using the following URL: https://github.com/BIOS6624-UCD/bios6624-piperwilliams/tree/master/Project1. Here, background information, relevant R scripts/R Markdown files, and R Markdown output that is relevant to the final analyses are all present. The formal citation for this GitHub repository can be found in the references below. 
+All materials for this project can be found on my BIOS6640 GitHub repository using the following URL: https://github.com/piperwilliams/BIOS6640/tree/master/RProject. The exact code used to generate this report can be found using the following URL: https://github.com/piperwilliams/BIOS6640/blob/master/RProject/Code/Final%20Report%20Code/2018-10-23%20Appendix.Rmd. 
 
 
 ###References
